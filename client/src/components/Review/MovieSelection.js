@@ -1,21 +1,25 @@
 import React from 'react';
 import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 
-function MovieSelection({ movies = [], selectedMovie, handleMovieChange }) {
+function MovieSelection({ movies, selectedMovie, handleMovieChange }) {
+
+  const handleMovieSelect = (event) => {
+    const selectedMovieId = event.target.value;
+    const selectedMovie = movies.find((movie) => movie.id === selectedMovieId);
+    handleMovieChange(selectedMovie);
+  }
+
   return (
     <FormControl fullWidth>
-      <InputLabel id="Movie Selection">Select a movie</InputLabel>
+      <InputLabel id="movie-select-label">Select a movie</InputLabel>
       <Select
-        labelId="Movie Selection"
-        value={selectedMovie}
-        label="Select a movie!"
-        displayEmpty
-        onChange={handleMovieChange}
+        value={selectedMovie ? selectedMovie.id : ''}
+        onChange={handleMovieSelect}
+        labelId="movie-select-label"
+        id="movie-select"
       >
-        <MenuItem value="">
-        </MenuItem>
-        {movies.map((movie) => (
-          <MenuItem key={movie.id} value={movie.name}>
+        {movies.map((movie, index) => (
+          <MenuItem key={movie.id} value={movie.id}>
             {movie.name}
           </MenuItem>
         ))}

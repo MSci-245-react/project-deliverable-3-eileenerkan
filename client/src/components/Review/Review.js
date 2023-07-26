@@ -1,208 +1,181 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { Grid, Typography, Button } from '@mui/material';
+import MovieSelection from './MovieSelection';
 import ReviewTitle from './ReviewTitle';
 import ReviewBody from './ReviewBody';
 import ReviewRating from './ReviewRating';
-import MovieSelection from './MovieSelection';
-import Typography from '@mui/material/Typography';
-import { Grid, Button } from '@mui/material';
 
-const Review = () => {
+const serverURL = "";
+
+function Review() {
   const [movies, setMovies] = useState([]);
-  const [selectedMovie, setSelectedMovie] = useState('');
+  const [selectedMovie, setSelectedMovie] = useState(null);
   const [enteredTitle, setEnteredTitle] = useState('');
   const [enteredReview, setEnteredReview] = useState('');
   const [selectedRating, setSelectedRating] = useState('');
-  const [formErrors, setFormErrors] = useState({});
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [completedSubmission, setCompletedSubmission] = useState({});
-  const [userID, setUserID] = useState(1);
-  const [movieID, setMovieID] = useState();
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [errors, setErrors] = useState({});
 
-
-  useEffect(() => {
-    callApiLoadMovies().then((movies) => {
-      setMovies(movies);
-    });
+  React.useEffect(() => {
+    loadMovies();
   }, []);
 
+  const loadMovies = () => {
+    callApiLoadMovies()
+      .then(res => {
+        console.log("callApiLoadMovies returned: ", res)
+        var parsed = JSON.parse(res.express);
+        console.log("callApiLoadMovies parsed: ", parsed);
+        setMovies(parsed);
+      })
+  }
+
   const callApiLoadMovies = async () => {
-    const url = '/api/getMovies';
+    const url = serverURL + "/api/getMovies";
+    console.log(url);
+
     const response = await fetch(url, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-      },
+        "Content-Type": "application/json",
+      }
     });
     const body = await response.json();
-    if (response.status !== 200) {
-      throw Error(body.message);
-    }
-    return JSON.parse(body.express);
+    if (response.status !== 200) throw Error(body.message);
+    console.log("User settings: ", body);
+    return body;
+  }
+
+  const handleMovieChange = (movie) => {
+    setSelectedMovie(movie);
+    setErrors((prevErrors) => ({ ...prevErrors, selectedMovie: false }));
+    setShowConfirmation(false);
   };
 
-  useEffect(() => {
-    getMovies();
-  }, [selectedMovie]);
+  const handleTitleChange = (event) => {
+    setEnteredTitle(event.target.value);
+    setErrors((prevErrors) => ({ ...prevErrors, enteredTitle: false }));
+    setShowConfirmation(false);
+  };
 
-  const getMovies = () => {
-    const getID = movies.find((movie) => movie.name === selectedMovie);
-    if (getID) {
-      setMovieID(getID.id);
-      console.log(getID.id);
+  const handleReviewChange = (event) => {
+    setEnteredReview(event.target.value);
+    setErrors((prevErrors) => ({ ...prevErrors, enteredReview: false }));
+    setShowConfirmation(false);
+  };
+
+  const handleRatingChange = (event) => {
+    setSelectedRating(event.target.value);
+    setErrors((prevErrors) => ({ ...prevErrors, selectedRating: false }));
+    setShowConfirmation(false);
+  };
+
+  const handleSubmit = () => {
+    let hasErrors = false;
+    const newErrors = {};
+
+    if (!selectedMovie) {
+      newErrors.selectedMovie = true;
+      hasErrors = true;
+    }
+    if (!enteredTitle) {
+      newErrors.enteredTitle = true;
+      hasErrors = true;
+    }
+    if (!enteredReview) {
+      newErrors.enteredReview = true;
+      hasErrors = true;
+    }
+    if (!selectedRating) {
+      newErrors.selectedRating = true;
+      hasErrors = true;
+    }
+
+    if (hasErrors) {
+      setErrors(newErrors);
+      setShowConfirmation(false);
+    } else {
+      // Prepare the review data to send to the server
+      const reviewData = {
+        userID: 1,
+        movieID: selectedMovie.id,
+        reviewTitle: enteredTitle,
+        reviewContent: enteredReview,
+        reviewScore: selectedRating
+      };
+
+      // Send the review data to the server using POST request
+      callApiAddReview(reviewData)
+        .then(res => {
+          console.log("callApiAddReview response: ", res);
+          setShowConfirmation(true);
+          setErrors({});
+        })
+        .catch(error => {
+          console.error("Error adding review:", error.message);
+          // Handle any error that occurred during the review submission
+        });
     }
   };
 
-  const callApiAddReview = async () => {
-    const url = '/api/addReview';
-    const review = {
-      userID: userID,
-      movieID: movieID,
-      reviewTitle: enteredTitle,
-      reviewScore: selectedRating,
-      reviewContent: enteredReview,
-    };
+  const callApiAddReview = async (reviewData) => {
+    const url = serverURL + "/api/addReview";
+    console.log("Sending review data to:", url);
+
     const response = await fetch(url, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(review),
+      body: JSON.stringify(reviewData),
     });
+
     const body = await response.json();
     if (response.status !== 200) throw Error(body.message);
     return body;
   };
 
-  const handleMovieChange = (event) => {
-    setSelectedMovie(event.target.value);
-  };
-
-  const handleTitleChange = (event) => {
-    setEnteredTitle(event.target.value);
-  };
-
-  const handleReviewChange = (event) => {
-    setEnteredReview(event.target.value);
-  };
-
-  const handleReviewRatingChange = (event) => {
-    setSelectedRating(event.target.value);
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    setFormErrors({});
-
-    const tempErrors = {};
-
-    if (!selectedMovie) {
-      tempErrors.movieError = 'Select your movie here';
-    }
-    if (!enteredTitle) {
-      tempErrors.titleError = 'Enter your review title here';
-    }
-    if (!enteredReview) {
-      tempErrors.reviewError = 'Enter your review here';
-    }
-    if (!selectedRating) {
-      tempErrors.ratingError = 'Select the rating here';
-    }
-
-    setFormErrors(tempErrors);
-
-    const submission = {
-      selectedMovie,
-      enteredTitle,
-      enteredReview,
-      selectedRating,
-    };
-
-    setCompletedSubmission(submission);
-
-    if (Object.keys(tempErrors).length === 0) {
-      try {
-        callApiAddReview();
-        setSelectedMovie('');
-        setEnteredTitle('');
-        setEnteredReview('');
-        setSelectedRating('');
-        setIsSubmitted(true);
-      } catch (error) {
-        console.error('Error submitting the review try again:', error);
-      }
-    }
-  };
-  const ratings = [1, 2, 3, 4, 5];
-  
   return (
-    <>
-      <Typography variant="h3">Review a Movie</Typography>
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <MovieSelection
-            movies={movies}
-            selectedMovie={selectedMovie}
-            handleMovieChange={handleMovieChange}
-          />
-          {isSubmitted && formErrors.movieError && (
-            <Typography variant="body2" color="error">
-              {formErrors.movieError}
-            </Typography>
-          )}
-        </Grid>
-        <Grid item xs={12}>
-          <ReviewTitle
-            enteredTitle={enteredTitle}
-            handleTitleChange={handleTitleChange}
-          />
-          {isSubmitted && formErrors.titleError && (
-            <Typography variant="body2" color="error">
-              {formErrors.titleError}
-            </Typography>
-          )}
-        </Grid>
-        <Grid item xs={12}>
-          <ReviewBody
-            enteredReview={enteredReview}
-            handleReviewChange={handleReviewChange}
-          />
-          {isSubmitted && formErrors.reviewError && (
-            <Typography variant="body2" color="error">
-              {formErrors.reviewError}
-            </Typography>
-          )}
-        </Grid>
-        <Grid item xs={12}>
-          <ReviewRating
-            ratings={ratings}
-            selectedRating={selectedRating}
-            handleReviewRatingChange={handleReviewRatingChange}
-          />
-          {isSubmitted && formErrors.ratingError && (
-            <Typography variant="body2" color="error">
-              {formErrors.ratingError}
-            </Typography>
-          )}
-        </Grid>
-        <Grid item xs={12}>
-          <Button variant="outlined" align="center" onClick={handleSubmit}>
-            Submit
-          </Button>
-        </Grid>
-        {isSubmitted && !Object.keys(formErrors).length > 0 && (
-          <Grid item xs={8}>
-            <Typography variant="body1">
-              Your review has successfully been received, thanks!
-            </Typography>
-            <Typography variant="body1">Movie: {completedSubmission.selectedMovie}</Typography>
-            <Typography variant="body1">Title: {completedSubmission.enteredTitle}</Typography>
-            <Typography variant="body1">Review: {completedSubmission.enteredReview}</Typography>
-            <Typography variant="body1">Rating: {completedSubmission.selectedRating}</Typography>
-          </Grid>
-        )}
+    <Grid container spacing={2}>
+      <Grid item xs={12}>
+        <Typography variant="h3">Review a movie</Typography>
       </Grid>
-    </>
+      <Grid item xs={12}>
+        <MovieSelection
+          movies={movies}
+          selectedMovie={selectedMovie}
+          handleMovieChange={handleMovieChange}
+        />
+        {errors.selectedMovie && <Typography color="red">Select your movie</Typography>}
+      </Grid>
+      <Grid item xs={12}>
+        <ReviewTitle enteredTitle={enteredTitle} handleTitleChange={handleTitleChange} />
+        {errors.enteredTitle && <Typography color="red">Enter your review title</Typography>}
+      </Grid>
+      <Grid item xs={12}>
+        <ReviewBody enteredReview={enteredReview} handleReviewChange={handleReviewChange} />
+        {errors.enteredReview && <Typography color="red">Enter your review</Typography>}
+      </Grid>
+      <Grid item xs={12}>
+        <ReviewRating selectedRating={selectedRating} handleRatingChange={handleRatingChange} />
+        {errors.selectedRating && <Typography color="red">Select the rating</Typography>}
+      </Grid>
+      <Grid item xs={12}>
+        <Button variant="contained" color="primary" onClick={handleSubmit}>
+          Submit
+        </Button>
+      </Grid>
+      {showConfirmation && (
+        <Grid item xs={12}>
+          <Typography variant="h6">Your review has been received</Typography>
+          <Typography variant="subtitle1">Movie: {selectedMovie.name}</Typography>
+          <Typography variant="subtitle1">Review Title: {enteredTitle}</Typography>
+          <Typography variant="subtitle1">Review Body: {enteredReview}</Typography>
+          <Typography variant="subtitle1">Rating: {selectedRating}</Typography>
+        </Grid>
+      )}
+    </Grid>
   );
-};
+}
 
 export default Review;

@@ -1,25 +1,17 @@
-import * as React from 'react';
-import Typography from '@mui/material/Typography';
+import React from 'react';
 import { TextField } from '@mui/material';
 
-const ReviewBody = ({ enteredReview, handleReviewChange }) => {
+function ReviewBody({ enteredReview, handleReviewChange }) {
   return (
-    <>
-      <label>Enter your review:</label>
-      <TextField
-        multiline
-        rows={4}
-        value={enteredReview}
-        onChange={handleReviewChange}
-        inputProps={{ maxLength: 200 }} 
-        variant="outlined"
-        fullWidth
-      />
-      <Typography variant="caption" color="textSecondary">
-        {enteredReview.length}/200 characters
-      </Typography>
-    </>
+    <TextField
+      label="Enter your review"
+      value={enteredReview}
+      onChange={handleReviewChange}
+      multiline
+      rows={4}
+      fullWidth
+    />
   );
-};
+}
 
 export default ReviewBody;
