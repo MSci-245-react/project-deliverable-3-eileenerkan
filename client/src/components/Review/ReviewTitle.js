@@ -1,16 +1,15 @@
-import * as React from 'react';
-import Typography from '@mui/material/Typography';
+import React from 'react';
 import { TextField } from '@mui/material';
 
+function ReviewTitle({ enteredTitle, handleTitleChange }) {
+  return (
+    <TextField
+      label="Enter your review title"
+      value={enteredTitle}
+      onChange={handleTitleChange}
+      fullWidth
+    />
+  );
+}
 
-const reviewTitle = ({ enteredTitle, handleTitleChange }) => {
-return (
-<>
-<label>Enter your review title:</label>
-<TextField value={enteredTitle} onChange={handleTitleChange} variant="outlined" fullWidth />
-</>
-);
-};
-
-
-export default reviewTitle;
+export default ReviewTitle;
