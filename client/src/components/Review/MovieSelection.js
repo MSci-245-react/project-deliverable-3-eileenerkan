@@ -13,8 +13,8 @@ function MovieSelection({ movies, selectedMovie, handleMovieChange }) {
     <FormControl fullWidth>
       <InputLabel id="movie-select-label">Select a movie</InputLabel>
       <Select
-        value={selectedMovie ? selectedMovie.id : ''}
-        onChange={handleMovieSelect}
+        value={selectedMovie ? selectedMovie.id : ""} // Ensure that value is not undefined
+        onChange={handleMovieSelect} // Use the correct handler
         labelId="movie-select-label"
         id="movie-select"
       >
