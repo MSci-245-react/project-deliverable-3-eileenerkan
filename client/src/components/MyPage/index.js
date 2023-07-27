@@ -9,21 +9,20 @@ import { Link } from 'react-router-dom';
 const MyPage = () => {
     const pages = ['Home', 'Search', 'Review', 'MyPage'];
     return (
-        <Grid container spacing={5}>
+        <Grid container spacing={2}>
             <AppBar position="static" sx={{backgroundColor: 'purple'}}>
                 <Container maxWidth="xl">
-                    <Toolbar sx={{ padding: '40px'}}>
+                    <Toolbar sx={{ padding: '40px', justifyContent: 'flex-start', alignItems: 'center'}}>
                     {pages.map((page) => (
                     <Typography
                         component={Link}
                         to={page === 'Home' ? `/` : `/${page.toLowerCase()}`}
                         variant="button text"
                         sx={{
-                        flexGrow: 1,
-                        textAlign: 'center',
                         textDecoration: 'none',
                         fontWeight: 'bold',
-                        color: 'white'
+                        color: 'white',
+                        marginRight: '15px'
                         }}
                     >
                         {page}
@@ -32,7 +31,7 @@ const MyPage = () => {
                     </Toolbar>
                 </Container>
             </AppBar>
-        </Grid>    
+        </Grid>  
     )
 }
 export default MyPage;
