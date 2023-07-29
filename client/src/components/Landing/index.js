@@ -8,13 +8,13 @@ import { Link } from 'react-router-dom';
 
 const Landing = () => {
     const pages = ['Home', 'Search', 'Review', 'MyPage'];
-    const imageUrl = "https://media.nbcsandiego.com/2022/05/GettyImages-1271522601.jpg?quality=85&strip=all&resize=1200%2C675"; // URL to your image
+    const imageUrl = 'https://w0.peakpx.com/wallpaper/652/689/HD-wallpaper-neon-hot-pink-curves-hot-neon-abstract-pink.jpg'; 
 
     return (
         <Grid container spacing={2}>
-            <AppBar position="static" sx={{backgroundColor: 'purple'}}>
+            <AppBar position="static" sx={{ backgroundColor: 'black' }}> {/* Set the AppBar color to black */}
                 <Container maxWidth="xl">
-                    <Toolbar sx={{ padding: '40px', justifyContent: 'flex-start', alignItems: 'center'}}>
+                    <Toolbar sx={{ padding: '40px', justifyContent: 'flex-start', alignItems: 'center' }}>
                     {pages.map((page) => (
                         <Typography
                             component={Link}
@@ -23,7 +23,7 @@ const Landing = () => {
                             sx={{
                                 textDecoration: 'none',
                                 fontWeight: 'bold',
-                                color: 'white',
+                                color: '#ef0086', // Set the text color to #ef0086 for the AppBar links
                                 marginRight: '15px'
                             }}
                         >
@@ -34,7 +34,7 @@ const Landing = () => {
                 </Container>
             </AppBar>
             <div style={{ 
-                backgroundImage: `url(${imageUrl})`,
+                backgroundImage: `url(${imageUrl})`, // Use the absolute path to the locally downloaded image as the background
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 height: '100vh',
@@ -42,13 +42,13 @@ const Landing = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: 'white', 
+                color: '#ef0086', // Set the text color to #ef0086 for the "Welcome to my Movie Page!" text
                 fontSize: '4em', 
                 fontStyle: 'italic', 
-                fontFamily: 'Helvetica Neue',
-                backgroundColor: 'lightpink' 
+                fontFamily: 'Satisfy, cursive',
+                textTransform: 'uppercase',
             }}>
-                Welcome to my Movie Page!
+                <span></span>
             </div>
         </Grid>    
     )
