@@ -5,7 +5,6 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import bodyParser from 'body-parser';
-import response from 'express';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,6 +15,55 @@ app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.use(express.static(path.join(__dirname, "client/build")));
+
+// Function to create the 'watched_movies' table if it doesn't exist
+// const createWatchedMoviesTable = (connection) => {
+//   const createTableQuery = `
+//     CREATE TABLE IF NOT EXISTS watched_movies (
+//       id INT AUTO_INCREMENT PRIMARY KEY,
+//       watched BOOLEAN NOT NULL,
+//       movieName VARCHAR(255) NOT NULL
+//     )
+//   `;
+//   connection.query(createTableQuery, (error, results) => {
+//     if (error) {
+//       console.error('Error creating watched_movies table:', error.message);
+//     } else {
+//       console.log('watched_movies table has been created or already exists.');
+//     }
+//   });
+// };
+
+// // Call the function to create the table when the server starts
+
+
+
+
+// const connection = mysql.createConnection(config);
+// createWatchedMoviesTable(connection);
+// connection.end();
+
+
+
+ 
+// API to check inserted data just for testing purpose
+//   app.post('/api/watchedMovie', (req, res) => {
+// 	const { watched, movieName } = req.body;
+// 	let connection = mysql.createConnection(config);
+  
+// 	const query = 'SELECT * FROM watched_movies';
+// 	connection.query(query, [watched, movieName], (error, results) => {
+// 	  if (error) {
+// 		console.error(error);
+// 		res.status(500).json({ error: 'Server Error' });
+// 	  } else {
+// 		console.log("Result ",results)
+		
+// 		res.status(200).json({ success: true });
+// 	  }
+// 	});
+// 	connection.end();
+//   });
 
 
 
@@ -150,20 +198,29 @@ app.get('/api/movieRecommendation', (req, res) => {
     connection.end();
   });
   
-  app.post('/api/watchedMovie', (req, res) => {
-    const { watched, movieName } = req.body;
-    let connection = mysql.createConnection(config);
   
-    const query = 'INSERT INTO watched_movies (watched, movieName) VALUES (?, ?)';
-    connection.query(query, [watched, movieName], (error, results) => {
-      if (error) {
-        console.error(error);
-        res.status(500).send('Server Error');
-      } else {
-        res.status(200).send('Successfully added to the database');
-      }
-    });
-    connection.end();
+ // API to add watched movie information to the database
+app.post('/api/watchedMovie', (req, res) => {
+	const { watched, movieName } = req.body;
+	let connection = mysql.createConnection(config);
+  
+	const query = 'INSERT INTO watched_movies (watched, movieName) VALUES (?, ?)';
+	connection.query(query, [watched, movieName], (error, results) => {
+	  if (error) {
+		console.error(error);
+		res.status(500).json({ error: 'Server Error' });
+	  } else {
+		console.log('Inserted data:', { watched, movieName });
+		console.log('Successfully added to the database.');
+		
+		res.status(200).json({ success: true });
+	  }
+	});
+	connection.end();
   });
 
-app.listen(port, () => console.log(`Listening on port ${port}`));
+ 
+  
+
+  
+  app.listen(port, () => console.log(`Listening on port ${port}`));
