@@ -1,67 +1,75 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Typography from "@mui/material/Typography";
 import Grid from '@mui/material/Grid';
 import AppBar from '@mui/material/AppBar';
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
 import { Link } from 'react-router-dom';
-import { TextField, Button } from '@mui/material';
+import Button from '@mui/material/Button';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 
-const serverURL = "";
-
-const Search = () => {
+const MyPage = () => {
   const pages = ['Home', 'Search', 'Review', 'MyPage'];
 
-  // State for search fields
-  const [title, setTitle] = useState('');
-  const [actor, setActor] = useState('');
-  const [director, setDirector] = useState('');
-  const [searchResults, setSearchResults] = useState([]); // State for search results
+  const [randomMovie, setRandomMovie] = useState(null);
+  const [recommendations, setRecommendations] = useState([]);
+  const [watched, setWatched] = useState(null);
 
-  const handleSearch = () => {
-    console.log(`Searching for title: ${title}, actor: ${actor}, director: ${director}`);
-      
-    // Combine the search parameters
-    const query = {
-      title: title,
-      actor: actor,
-      director: director,
+  const fetchRandomMovie = () => {
+    fetch('/api/randomMovie')
+      .then((response) => response.json())
+      .then((data) => setRandomMovie(data))
+      .catch((error) => console.error('Error fetching random movie:', error.message));
+  };
+
+  const fetchMovieRecommendations = async () => {
+    try {
+      const response = await fetch('/api/movieRecommendation');
+      const data = await response.json();
+      setRecommendations(data);
+    } catch (error) {
+      console.error('Error fetching movie recommendations:', error.message);
+    }
+  };
+
+  const handleSubmitWatched = async (watchedValue) => {
+    setWatched(watchedValue);
+  
+    const dataToSend = {
+      watched: watchedValue,
+      movieName: randomMovie.name,
     };
-      
-    // Call the API with the combined query
-    callApiSearchMovies(query)
-      .then((searchResults) => {
-        const resultsArray = JSON.parse(searchResults.express);
-        console.log("Search results:", resultsArray);
-        setSearchResults(resultsArray); // Save the search results in state
-      })
-      .catch((error) => {
-        console.error("Error searching movies:", error.message);
+  
+    try {
+      const response = await fetch('/api/watchedMovie', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dataToSend),
       });
+  
+      if (!response.ok) {
+        const text = await response.text();
+        console.error('Server response:', response.status, text);
+        throw new Error(`Server responded with status: ${response.status}, text: ${text}`);
+      }
+    } catch (error) {
+      console.error('Error submitting watch data:', error.message);
+      console.error('Full error object:', error);
+    }
   };
 
-  const callApiSearchMovies = async (query) => {
-    console.log("callApiSearchMovies called");
-    const url = serverURL + "/api/searchMovies";
-    console.log(url);
-      
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ query }), // Sending the query 
-    });
-      
-    const body = await response.json();
-    if (response.status !== 200) throw Error(body.message);
-    console.log("Search results: ", body);
-    return body;
-  };
+  useEffect(() => {
+    fetchRandomMovie();
+    fetchMovieRecommendations();
+  }, []);
 
   return (
     <Grid container spacing={2}>
-      <AppBar position="static" sx={{ backgroundColor: 'purple' }}>
+      <AppBar position="static" sx={{ backgroundColor: 'black' }}>
         <Container maxWidth="xl">
           <Toolbar sx={{ padding: '40px', justifyContent: 'flex-start', alignItems: 'center' }}>
             {pages.map((page) => (
@@ -73,7 +81,7 @@ const Search = () => {
                 sx={{
                   textDecoration: 'none',
                   fontWeight: 'bold',
-                  color: 'white',
+                  color: '#ef0086',
                   marginRight: '15px',
                 }}
               >
@@ -83,75 +91,62 @@ const Search = () => {
           </Toolbar>
         </Container>
       </AppBar>
-
-      {/* Title */}
       <Grid item xs={12}>
-        <Typography variant="h4" component="h2" gutterBottom sx={{ fontWeight: 'bold', textAlign: 'left', paddingLeft: '18px' }}>
-          Search your movie!
+      <Typography variant="h4" component="h3" gutterBottom sx={{ fontWeight: 'bold' }}>
+          Welcome to My Page!
         </Typography>
-      </Grid>
 
-      {/* Search Fields */}
-      <Grid item xs={12}>
-        <TextField
-          fullWidth
-          label="Movie Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          style={{ marginBottom: '20px', width: '70%' }}
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <TextField
-          fullWidth
-          label="Actor's Name"
-          value={actor}
-          onChange={(e) => setActor(e.target.value)}
-          style={{ marginBottom: '20px', width: '70%' }}
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <TextField
-          fullWidth
-          label="Director's Name"
-          value={director}
-          onChange={(e) => setDirector(e.target.value)}
-          style={{ marginBottom: '20px', width: '70%' }}
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <Button variant="contained" color="secondary" onClick={handleSearch}>
-          Search
-        </Button>
-      </Grid>
-
-      {/* Display Search Results */}
-      <Grid item xs={12}>
-        {searchResults.length > 0 ? (
+        {randomMovie && (
           <div>
-            <Typography variant="h6" gutterBottom>
-              Search Results:
+            <Typography variant="h5" component="h5" gutterBottom sx={{ fontWeight: 'bold' }}>
+              Randomly Selected Movie:
             </Typography>
-            <ul>
-              {searchResults.map((movie) => (
-                <><li key={movie.id}>
-                      Movie Name : {movie.name}
-                  </li><li key={movie.id}>
-                          Movie Year : {movie.year}
-                      </li><li key={movie.id}>
-                          Movie Quality : {movie.quality}
-                      </li></>
-              ))}
-            </ul>
+            <Typography variant="body1" component="p" gutterBottom>
+              Name: {randomMovie.name}
+            </Typography>
+            <Typography variant="body1" component="p" gutterBottom>
+              Year: {randomMovie.year}
+            </Typography>
+            <Typography variant="body1" component="p" gutterBottom>
+              Quality: {randomMovie.quality}
+            </Typography>
+
+            <Typography variant="h6" component="h6" gutterBottom>
+              Have you already watched this movie?
+            </Typography>
+            <div style={{ marginBottom: '20px' }}>
+              <Button variant="contained" style={{ backgroundColor: '#ef0086' }} onClick={() => handleSubmitWatched(true)}>Yes</Button>
+              <Button variant="contained" style={{ backgroundColor: '#ef0086', marginLeft: '10px' }} onClick={() => handleSubmitWatched(false)}>No</Button>
+            </div>
           </div>
-        ) : (
-          <Typography variant="body1" gutterBottom>
-            No results found.
-          </Typography>
+        )}
+
+        {recommendations.length > 0 && (
+          <div>
+            <Typography variant="h5" component="h5" gutterBottom>
+              Recommended Movies:
+            </Typography>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Average Review Score</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {recommendations.map((movie) => (
+                  <TableRow key={movie.id}>
+                    <TableCell>{movie.name}</TableCell>
+                    <TableCell>{movie.avg_review_score}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         )}
       </Grid>
     </Grid>
   );
 };
 
-export default Search;
+export default MyPage;
