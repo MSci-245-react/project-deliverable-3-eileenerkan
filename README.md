@@ -99,6 +99,9 @@ Here, `Path` represents the affix that will appear at the end of the URL when yo
 
 &nbsp;&nbsp;&nbsp;&nbsp;Note: if the functionality of your page requires additional data, it is sufficient to just include a few samples in your database, e.g. a few links to movie trailers (for point #i) or a few articles  (for point #iii). Include a short description on this page of your app, telling us which movies have this additional data, so that we use them to test your app.
 
+
+In MyPage component I included a web component which showcases 5 recommended movies based on the submitted Reviews. Additonally, I have created a function which generates a random movie based on the list of movies from imbd and asks the user if they have seen it before with Yes or No buttons. Based on their reply, this information will be sent to sql into a table I created called watched_movies which has columns of the watchID (using Autoincrement), the movie, and whether the user watched it or not.
+
 &nbsp;&nbsp;&nbsp;&nbsp;b.	Under client/src/components/ create a new directory MyPage and save this page as index.js under that directory.
 
 &nbsp;&nbsp;&nbsp;&nbsp;c.	Include the MUI Appbar in the `MyPage` page with the links to `Landing`, `Review` and `Search`.
