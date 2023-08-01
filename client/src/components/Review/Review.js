@@ -169,7 +169,7 @@ function Review() {
         <Grid item xs={12}>
           <Typography variant="h6">Your review has been received</Typography>
           <Typography variant="subtitle1">Movie: {selectedMovie.name}</Typography>
-          <Typography variant="subtitle1">Review Title: {enteredTitle}</Typography>
+          <Typography variant="subtitle1">Re view Title: {enteredTitle}</Typography>
           <Typography variant="subtitle1">Review Body: {enteredReview}</Typography>
           <Typography variant="subtitle1">Rating: {selectedRating}</Typography>
         </Grid>

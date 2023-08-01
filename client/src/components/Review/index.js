@@ -11,7 +11,7 @@ const MyPage = () => {
     const pages = ['Home', 'Search', 'Review', 'MyPage'];
     return (
         <Grid container spacing={2}>
-            <AppBar position="static" sx={{backgroundColor: 'purple'}}>
+           <AppBar position="static" sx={{ backgroundColor: 'black' }}> 
                 <Container maxWidth="xl">
                     <Toolbar sx={{ padding: '40px', justifyContent: 'flex-start', alignItems: 'center'}}>
                     {pages.map((page) => (
@@ -22,7 +22,7 @@ const MyPage = () => {
                         sx={{
                         textDecoration: 'none',
                         fontWeight: 'bold',
-                        color: 'white',
+                        color: '#ef0086',
                         marginRight: '15px'
                         }}
                     >
