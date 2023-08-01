@@ -42,13 +42,13 @@ const Landing = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#ef0086',
+                color: 'white',
                 fontSize: '4em', 
                 fontStyle: 'italic', 
-                fontFamily: 'Satisfy, cursive',
+                fontFamily: 'Poppins, sans-serif',
                 textTransform: 'uppercase',
             }}>
-                <span></span>
+                <span>Welcome to my Movie Page</span>
             </div>
         </Grid>    
     )
