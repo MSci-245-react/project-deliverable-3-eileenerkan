@@ -12,7 +12,7 @@ const Landing = () => {
 
     return (
         <Grid container spacing={2}>
-            <AppBar position="static" sx={{ backgroundColor: 'black' }}> {/* Set the AppBar color to black */}
+            <AppBar position="static" sx={{ backgroundColor: 'black' }}> {/*color*/}
                 <Container maxWidth="xl">
                     <Toolbar sx={{ padding: '40px', justifyContent: 'flex-start', alignItems: 'center' }}>
                     {pages.map((page) => (
@@ -23,7 +23,7 @@ const Landing = () => {
                             sx={{
                                 textDecoration: 'none',
                                 fontWeight: 'bold',
-                                color: '#ef0086', // Set the text color to #ef0086 for the AppBar links
+                                color: '#ef0086',
                                 marginRight: '15px'
                             }}
                         >
@@ -34,7 +34,7 @@ const Landing = () => {
                 </Container>
             </AppBar>
             <div style={{ 
-                backgroundImage: `url(${imageUrl})`, // Use the absolute path to the locally downloaded image as the background
+                backgroundImage: `url(${imageUrl})`, 
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 height: '100vh',
@@ -42,7 +42,7 @@ const Landing = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#ef0086', // Set the text color to #ef0086 for the "Welcome to my Movie Page!" text
+                color: '#ef0086',
                 fontSize: '4em', 
                 fontStyle: 'italic', 
                 fontFamily: 'Satisfy, cursive',

@@ -83,8 +83,7 @@ app.post('/api/getMovies', (req, res) => {
     connection.end();
 });
 
-//API for search functionlaity
-// Backend API for Movie Search
+//API for search function
 app.post('/api/searchMovies', (req, res) => {
     console.log("Search called");
     const { query } = req.body;
@@ -166,7 +165,7 @@ app.get('/api/movieRecommendation', (req, res) => {
         return res.status(500).json({ error: "Error fetching movie recommendations from the database" });
       }
   
-      res.json(results); // Send the recommendations as a JSON response
+      res.json(results); 
     });
   
     connection.end();
@@ -192,7 +191,7 @@ app.get('/api/movieRecommendation', (req, res) => {
         return res.status(404).json({ message: "No movies found in the database" });
       }
   
-      res.json(results[0]); // Send the random movie as a JSON response
+      res.json(results[0]);
     });
   
     connection.end();
